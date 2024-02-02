@@ -22,7 +22,8 @@ export default function FileUpload() {
             method: 'POST',
             body: handleEmails(results.data),
           });
-          const data = await response.json();
+
+          // const data = await response.json();
           if (response.status === 200) {
             setIsUploaded(true);
             messageApi.open({
