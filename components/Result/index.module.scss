@@ -1,0 +1,33 @@
+// .wrapper :global {
+//     .ant-table-content {
+//         position: relative;
+//     }
+
+//     tr.ant-table-row[data-row-key="2"] {
+//         background-color: black;
+//     }
+
+//     tr.ant-table-row[data-row-key="3"] {
+//         background-color: black;
+//     }
+
+//     .ant-table-tbody>tr.ant-table-row[data-row-key="2"]:hover {
+//         // background: none;
+//         // background-color: blue;
+//     }
+
+//     .ant-table-tbody>tr.ant-table-row[data-row-key="3"]:hover {
+//         // background: none;
+//     }
+// }
+
+.wrapper {
+    position: relative;
+    .overlay {
+        position: absolute;
+        right: 40%;
+        bottom: 35%;
+        color: white;
+        font-size: 40px;
+    }
+}
