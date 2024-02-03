@@ -8,10 +8,7 @@ const stripe = new Stripe(process.env.STRIPE_SK_KEY, {
   apiVersion: "2023-10-16",
 });
 
-console.log("stripe1111",stripe);
-
 export async function POST(req, res) {
-  console.log("req111,", req);
   const signature = headers().get("stripe-signature");
   const signingSecret = process.env.STRIPE_SIGNING_SECRET;
   const rawBody = await buffer(req.body);
@@ -24,12 +21,16 @@ export async function POST(req, res) {
     return Response.json({ error: `Webhook Error ${err?.message} ` });
   }
 
-  console.log("event11", event);
 
   switch (event.type) {
     case "customer.subscription.deleted":
-      await deleteSubscription(event);
+      const deleteSubscription = event.data.object;
+      await onCacnelSubscription(
+        deleteSubscription.status === "active",
+        deleteSubscription.id
+      );
       break;
+
     case "customer.subscription.updated":
       const { customer } = event.data.object;
       const subscription = await stripe.subscriptions.list({
@@ -62,10 +63,6 @@ const onSuccessSubscription = async (
   status,
   email
 ) => {
-  console.log("subscription_id,customer_id,status,email", subscription_id,
-    customer_id,
-    status,
-    email);
   const supabase = await createSupbaseAdmin();
   const { data, error } = await supabase
     .from("users")
@@ -84,4 +81,25 @@ const onSuccessSubscription = async (
 
 
 
-async function deleteSubscription(event) { }
+const onCacnelSubscription = async (
+  status,
+  subscription_id
+) => {
+  console.log("canvel11");
+  const supabase = await createSupbaseAdmin();
+  const { data, error } = await supabase
+    .from("users")
+    .update({
+      stripe_subscriptoin_id: null,
+      stripe_customer_id: null,
+      subscription_status: status,
+    })
+    .eq("stripe_subscriptoin_id", subscription_id)
+    .select("id")
+    .single();
+    HTMLFormControlsCollection.log("cancel data",data);
+
+  await supabase.auth.admin.updateUserById(data?.id, {
+    user_metadata: { stripe_customer_id: null },
+  });
+};

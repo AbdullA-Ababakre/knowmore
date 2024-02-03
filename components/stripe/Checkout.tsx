@@ -10,22 +10,21 @@ import { useUser } from "@/lib/store/user";
 import LoginForm from "@/components/Nav/LoginForm";
 
 export default function Checkout() {
-    //Pay money
     const [isPending, startTransition] = useTransition();
     const pathname = usePathname();
 	const user = useUser((state) => state.user);
-	console.log("user111",user);
+
 
     const handleCheckOut = () => {
         startTransition(async () => {
             const data = JSON.parse(
                 await checkout(user?.email!, location.origin + pathname)
             );
-            const result = await loadStripe(
+            const stripe = await loadStripe(
                 process.env.NEXT_PUBLIC_STRIPE_PUBLIC_KEY!
             );
 
-            await result?.redirectToCheckout({ sessionId: data.id });
+            await stripe?.redirectToCheckout({ sessionId: data.id });
         });
     };
 
