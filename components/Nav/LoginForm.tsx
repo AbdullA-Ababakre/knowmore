@@ -1,6 +1,6 @@
 "use client";
 import { Button } from "@/components/ui/button";
-import { GitHubLogoIcon } from "@radix-ui/react-icons";
+import { AiFillGoogleCircle } from "react-icons/ai";
 import { createBrowserClient } from "@supabase/ssr";
 import { usePathname } from "next/navigation";
 import React from "react";
@@ -27,7 +27,7 @@ export default function LoginForm() {
 			variant="outline"
 			onClick={handleLogin}
 		>
-			<GitHubLogoIcon /> Login
+			 <AiFillGoogleCircle /> Login
 		</Button>
 	);
 }
