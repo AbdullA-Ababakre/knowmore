@@ -21,6 +21,8 @@ export async function POST(req, res) {
     return Response.json({ error: `Webhook Error ${err?.message} ` });
   }
 
+  console.log("event.type111", event.type);
+
 
   switch (event.type) {
     case "customer.subscription.deleted":
@@ -86,6 +88,7 @@ const onCacnelSubscription = async (
   subscription_id
 ) => {
   console.log("canvel11");
+  console.log("sucscribtion_id11",subscription_id)
   const supabase = await createSupbaseAdmin();
   const { data, error } = await supabase
     .from("users")
@@ -97,7 +100,8 @@ const onCacnelSubscription = async (
     .eq("stripe_subscriptoin_id", subscription_id)
     .select("id")
     .single();
-    HTMLFormControlsCollection.log("cancel data",data);
+
+    console.log("data11",data);
 
   await supabase.auth.admin.updateUserById(data?.id, {
     user_metadata: { stripe_customer_id: null },

@@ -1,71 +1,116 @@
+import React, { useState } from 'react';
 import { Space, Table, Tag } from 'antd';
 import type { TableProps } from 'antd';
 import styles from './index.module.scss';
-import { ConfigProvider } from 'antd';
+import { ConfigProvider, Button } from 'antd';
 
 
 
 interface DataType {
     key: string;
     name: string;
-    age: number;
-    address: string;
+    role: string;
+    profile: string;
+    company: string;
+    CompanyDescription: string;
+    location: string;
+    email: string;
 }
 
 const columns: TableProps<DataType>['columns'] = [
     {
-        title: 'Name',
+        title: 'Full Name',
         dataIndex: 'name',
         key: 'name',
         render: (text) => <a>{text}</a>,
     },
     {
-        title: 'Age',
-        dataIndex: 'age',
-        key: 'age',
+        title: 'Role',
+        dataIndex: 'role',
+        key: 'role',
     },
     {
-        title: 'Address',
-        dataIndex: 'address',
-        key: 'address',
+        title: 'LinkedIn Profile',
+        dataIndex: 'profile',
+        key: 'profile',
+        render: (text) => <a>{text}</a>,
     },
     {
-        title: 'Tags',
-        key: 'tags',
-        dataIndex: 'tags',
+        title: 'Company',
+        key: 'company',
+        dataIndex: 'company',
+    },
+    {
+        title: 'Company Description',
+        key: 'company description',
+        dataIndex: 'CompanyDescription',
+    },
+    {
+        title: 'Location',
+        key: 'location',
+        dataIndex: 'location',
+    },
+    {
+        title: 'Custome Email',
+        key: 'email',
+        dataIndex: 'email',
+        render: (text) => <div className={styles.emailColumn}>{text}</div>,
     },
     {
         title: 'Action',
         key: 'action',
-        dataIndex: 'action'
-    },
+        render: (text, record, index) => {
+            return (
+                <Button style={{ display: index === 0 ? 'block' : 'none' }}>
+                    <a>Email to {record.name}</a>
+                </Button>
+            )
+        },
+    }
 ];
 
 const data: DataType[] = [
     {
         key: '1',
-        name: 'John Brown',
-        age: 32,
-        address: 'New York No. 1 Lake Park',
-        tags: ['nice', 'developer'],
+        name: 'Omar',
+        role: 'Building Founders inc',
+        company: 'founders inc',
+        CompanyDescription: 'Founders, Inc. focuses on enabling founders to build epic companies',
+        profile: 'https://meet.google.com/',
+        location: 'San Francisco Bay Area',
+        email: `Hey Omar,
+        I took a look at f.inc and your impressive journey from CMO at Fei Protocol to spearheading Founders, Inc. piqued my interest. If you're open to it, I'd love to connect over a quick call to learn more about your vision for Founders, Inc., and discuss how we might contribute to your next chapter.
+        Best,`
     },
     {
         key: '2',
-        name: 'Jim Green',
-        age: 42,
-        address: 'London No. 1 Lake Park',
-        tags: ['loser'],
+        name: 'Omar',
+        role: 'Building Founders inc',
+        company: 'founders inc',
+        CompanyDescription: 'Founders, Inc. focuses on enabling founders to build epic companies',
+        profile: '22222',
+        location: 'San Francisco Bay Area',
+        email: `Hey Omar,
+        I took a look at f.inc and your impressive journey from CMO at Fei Protocol to spearheading Founders, Inc. piqued my interest. If you're open to it, I'd love to connect over a quick call to learn more about your vision for Founders, Inc., and discuss how we might contribute to your next chapter.
+        Best,`
     },
     {
         key: '3',
-        name: 'Joe Black',
-        age: 32,
-        address: 'Sydney No. 1 Lake Park',
-        tags: ['cool', 'teacher'],
+        name: 'Omar',
+        role: 'Building Founders inc',
+        company: 'founders inc',
+        CompanyDescription: 'Founders, Inc. focuses on enabling founders to build epic companies',
+        profile: '22222',
+        location: 'San Francisco Bay Area',
+        email: `Hey Omar,
+        I took a look at f.inc and your impressive journey from CMO at Fei Protocol to spearheading Founders, Inc. piqued my interest. If you're open to it, I'd love to connect over a quick call to learn more about your vision for Founders, Inc., and discuss how we might contribute to your next chapter.
+        Best,`
     },
 ];
 
 export default function Result() {
+
+
     return (
         <div className={styles.wrapper}>
             <ConfigProvider
@@ -80,13 +125,13 @@ export default function Result() {
                     },
                 }}
             >
-                <Table className={styles.table} columns={columns} dataSource={data}>
+                <Table className={styles.table} columns={columns} dataSource={data}
+                >
                 </Table>
+                <div className={styles.overlay}>
+                    <span className={styles.action}>subscribe</span> to continue
+                </div>
             </ConfigProvider>
-            {/* <div className={styles.overlay}>
-                <span className={styles.action}>subscribe</span> to continue
-            </div> */}
         </div>
-
     );
 }
