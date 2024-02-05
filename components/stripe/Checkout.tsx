@@ -12,7 +12,7 @@ import LoginForm from "@/components/Nav/LoginForm";
 export default function Checkout() {
     const [isPending, startTransition] = useTransition();
     const pathname = usePathname();
-	const user = useUser((state) => state.user);
+    const user = useUser((state) => state.user);
 
 
     const handleCheckOut = () => {
@@ -28,13 +28,13 @@ export default function Checkout() {
         });
     };
 
-	if (!user) {
-		return (
-			<div className="flex items-center justify-center h-96 gap-2">
-				<LoginForm /> to continue
-			</div>
-		);
-	}
+    if (!user) {
+        return (
+            <div className="flex items-center justify-center h-96 gap-2">
+                <LoginForm /> to continue
+            </div>
+        );
+    }
 
     return (
         <div>

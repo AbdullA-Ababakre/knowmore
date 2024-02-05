@@ -27,7 +27,7 @@ export default function LoginForm() {
 			variant="outline"
 			onClick={handleLogin}
 		>
-			 <AiFillGoogleCircle /> Login
+			<AiFillGoogleCircle /> Login
 		</Button>
 	);
 }

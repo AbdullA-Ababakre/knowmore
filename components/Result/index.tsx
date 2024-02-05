@@ -1,8 +1,14 @@
-import React, { useState } from 'react';
+'use client';
+import React, { useState, useTransition } from 'react';
 import { Space, Table, Tag } from 'antd';
 import type { TableProps } from 'antd';
+import { checkout } from "@/lib/actions/stripe";
 import styles from './index.module.scss';
 import { ConfigProvider, Button } from 'antd';
+import { useUser } from "@/lib/store/user";
+import { loadStripe } from "@stripe/stripe-js";
+import { usePathname } from "next/navigation";
+import { createBrowserClient } from "@supabase/ssr";
 
 
 
@@ -109,6 +115,48 @@ const data: DataType[] = [
 ];
 
 export default function Result() {
+    const user = useUser((state) => state.user);
+    const [isPending, startTransition] = useTransition();
+
+    const pathname = usePathname();
+    const supabase = createBrowserClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL!,
+        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+    );
+
+    const handleLogin = () => {
+        supabase.auth.signInWithOAuth({
+            provider: "google",
+            options: {
+                redirectTo: `${location.origin}/auth/callback?next=${pathname}`,
+            },
+        });
+    };
+
+    const handleCheckOut = () => {
+        startTransition(async () => {
+            const data = JSON.parse(
+                await checkout(user?.email!, location.origin + pathname)
+            );
+            const stripe = await loadStripe(
+                process.env.NEXT_PUBLIC_STRIPE_PUBLIC_KEY!
+            );
+
+            await stripe?.redirectToCheckout({ sessionId: data.id });
+        });
+    };
+
+    const handleSubscribe = () => {
+        if (user) {
+            //  checkout
+            handleCheckOut();
+
+        } else {
+            // login && checkout
+            handleLogin();
+            // handleCheckOut();
+        }
+    }
 
 
     return (
@@ -129,7 +177,7 @@ export default function Result() {
                 >
                 </Table>
                 <div className={styles.overlay}>
-                    <span className={styles.action}>subscribe</span> to continue
+                    <span className={styles.action} onClick={handleSubscribe}>subscribe</span> to continue
                 </div>
             </ConfigProvider>
         </div>

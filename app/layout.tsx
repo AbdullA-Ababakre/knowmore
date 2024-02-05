@@ -13,8 +13,8 @@ const defaultUrl = process.env.VERCEL_URL
 export const metadata: Metadata = {
 	metadataBase: new URL(defaultUrl),
 	title: {
-		template: "%s | Daily Blog",
-		default: "Daily Blog",
+		template: "%s | Know More",
+		default: "Know More",
 	},
 	authors: {
 		name: "",
