@@ -21,18 +21,18 @@ export async function POST(req, res) {
     return Response.json({ error: `Webhook Error ${err?.message} ` });
   }
 
-  console.log("event.type111", event.type);
-
+  console.log("event111", event);
 
   switch (event.type) {
     case "customer.subscription.deleted":
       const deleteSubscription = event.data.object;
-      await onCacnelSubscription(
-        deleteSubscription.status === "active",
-        deleteSubscription.id
-      );
+      if (deleteSubscription.status === 'canceled') {
+        await onCacnelSubscription(
+          false,
+          deleteSubscription.customer
+        );
+      }
       break;
-
     case "customer.subscription.updated":
       const { customer } = event.data.object;
       const subscription = await stripe.subscriptions.list({
@@ -42,7 +42,7 @@ export async function POST(req, res) {
       const customerInfo = await stripe.customers.retrieve(
         event.data.object.customer
       );
-      if (subscription.data.length) {
+      if (subscription.data.length && sub.status === "active") {
         const sub = subscription.data[0];
         await onSuccessSubscription(
           sub.id,
@@ -76,34 +76,28 @@ const onSuccessSubscription = async (
     .eq("email", email)
     .select("id")
     .select();
-  await supabase.auth.admin.updateUserById(data?.id, {
-    user_metadata: { stripe_customer_id: null },
-  });
 };
 
 
 
 const onCacnelSubscription = async (
   status,
-  subscription_id
+  customer
 ) => {
-  console.log("canvel11");
-  console.log("sucscribtion_id11",subscription_id)
+  // console.log("status", status);
+  // console.log("subscription_id11", subscription_id);
+  console.log("customer111", customer);
   const supabase = await createSupbaseAdmin();
-  const { data, error } = await supabase
+  const { error } = await supabase
     .from("users")
     .update({
       stripe_subscriptoin_id: null,
       stripe_customer_id: null,
       subscription_status: status,
     })
-    .eq("stripe_subscriptoin_id", subscription_id)
-    .select("id")
-    .single();
+    .match({ stripe_customer_id: customer });
 
-    console.log("data11",data);
+  console.log("erro11r", error);
 
-  await supabase.auth.admin.updateUserById(data?.id, {
-    user_metadata: { stripe_customer_id: null },
-  });
+
 };
