@@ -42,7 +42,11 @@ export async function POST(req, res) {
       const customerInfo = await stripe.customers.retrieve(
         event.data.object.customer
       );
-      if (subscription.data.length && sub.status === "active") {
+
+      console.log("customer",customer);
+      console.log("customerINf1o",customerInfo);
+
+      if (subscription.data.length && event.data.object.status === "active") {
         const sub = subscription.data[0];
         await onSuccessSubscription(
           sub.id,
