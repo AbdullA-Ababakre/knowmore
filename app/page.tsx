@@ -14,7 +14,6 @@ export default async function Home() {
 				<Desc />
 				<MainLayout></MainLayout>
 			</main>
-			<Checkout />
 		</div>
 	);
 }

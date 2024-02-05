@@ -1,5 +1,5 @@
 'use client';
-import React, { useState, useTransition } from 'react';
+import React, { useEffect, useState, useTransition } from 'react';
 import { Space, Table, Tag } from 'antd';
 import type { TableProps } from 'antd';
 import { checkout } from "@/lib/actions/stripe";
@@ -23,57 +23,7 @@ interface DataType {
     email: string;
 }
 
-const columns: TableProps<DataType>['columns'] = [
-    {
-        title: 'Full Name',
-        dataIndex: 'name',
-        key: 'name',
-        render: (text) => <a>{text}</a>,
-    },
-    {
-        title: 'Role',
-        dataIndex: 'role',
-        key: 'role',
-    },
-    {
-        title: 'LinkedIn Profile',
-        dataIndex: 'profile',
-        key: 'profile',
-        render: (text) => <a>{text}</a>,
-    },
-    {
-        title: 'Company',
-        key: 'company',
-        dataIndex: 'company',
-    },
-    {
-        title: 'Company Description',
-        key: 'company description',
-        dataIndex: 'CompanyDescription',
-    },
-    {
-        title: 'Location',
-        key: 'location',
-        dataIndex: 'location',
-    },
-    {
-        title: 'Custome Email',
-        key: 'email',
-        dataIndex: 'email',
-        render: (text) => <div className={styles.emailColumn}>{text}</div>,
-    },
-    {
-        title: 'Action',
-        key: 'action',
-        render: (text, record, index) => {
-            return (
-                <Button style={{ display: index === 0 ? 'block' : 'none' }}>
-                    <a>Email to {record.name}</a>
-                </Button>
-            )
-        },
-    }
-];
+
 
 const data: DataType[] = [
     {
@@ -117,6 +67,14 @@ const data: DataType[] = [
 export default function Result() {
     const user = useUser((state) => state.user);
     const [isPending, startTransition] = useTransition();
+    const [isSub, setIsSub] = useState(false);
+
+
+    useEffect(() => {
+        const isSub = user?.stripe_customer_id;
+        setIsSub(Boolean(isSub));
+    }, [user]);
+
 
     const pathname = usePathname();
     const supabase = createBrowserClient(
@@ -141,26 +99,78 @@ export default function Result() {
             const stripe = await loadStripe(
                 process.env.NEXT_PUBLIC_STRIPE_PUBLIC_KEY!
             );
-
             await stripe?.redirectToCheckout({ sessionId: data.id });
+
+            if (data.subscription_status) {
+                setIsSub(true);
+            }
+
         });
     };
 
     const handleSubscribe = () => {
         if (user) {
-            //  checkout
             handleCheckOut();
-
         } else {
-            // login && checkout
             handleLogin();
-            // handleCheckOut();
         }
     }
 
+    const columns: TableProps<DataType>['columns'] = [
+        {
+            title: 'Full Name',
+            dataIndex: 'name',
+            key: 'name',
+            render: (text) => <a>{text}</a>,
+        },
+        {
+            title: 'Role',
+            dataIndex: 'role',
+            key: 'role',
+        },
+        {
+            title: 'LinkedIn Profile',
+            dataIndex: 'profile',
+            key: 'profile',
+            render: (text) => <a>{text}</a>,
+        },
+        {
+            title: 'Company',
+            key: 'company',
+            dataIndex: 'company',
+        },
+        {
+            title: 'Company Description',
+            key: 'company description',
+            dataIndex: 'CompanyDescription',
+        },
+        {
+            title: 'Location',
+            key: 'location',
+            dataIndex: 'location',
+        },
+        {
+            title: 'Custome Email',
+            key: 'email',
+            dataIndex: 'email',
+            render: (text) => <div className={styles.emailColumn}>{text}</div>,
+        },
+        {
+            title: 'Action',
+            key: 'action',
+            render: (text, record, index) => {
+                return (
+                    <Button style={{ display: isSub || index === 0 ? 'block' : 'none' }}>
+                        <a>Email to {record.name}</a>
+                    </Button>
+                );
+            },
+        }
+    ];
+
 
     return (
-        <div className={styles.wrapper}>
+        <div className={` ${styles.wrapper} ${!isSub ? styles.cover : ''} `}>
             <ConfigProvider
                 theme={{
                     components: {
@@ -176,9 +186,12 @@ export default function Result() {
                 <Table className={styles.table} columns={columns} dataSource={data}
                 >
                 </Table>
-                <div className={styles.overlay}>
-                    <span className={styles.action} onClick={handleSubscribe}>subscribe</span> to continue
-                </div>
+                {
+                    !isSub &&
+                    (<div className={styles.overlay}>
+                        <span className={styles.action} onClick={handleSubscribe}>subscribe</span> to continue
+                    </div>)
+                }
             </ConfigProvider>
         </div>
     );

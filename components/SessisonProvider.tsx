@@ -19,6 +19,7 @@ export default function SessisonProvider() {
 
 	const readSession = async () => {
 		const { data: userSesssion } = await supabase.auth.getSession();
+		console.log("userSession11", userSesssion);
 
 		if (userSesssion.session) {
 			const { data } = await supabase
@@ -26,6 +27,8 @@ export default function SessisonProvider() {
 				.select("*")
 				.eq("id", userSesssion.session?.user.id)
 				.single();
+
+			console.log("data11", data);
 			setUser(data);
 		}
 	};

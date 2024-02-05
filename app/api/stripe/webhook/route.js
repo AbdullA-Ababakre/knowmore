@@ -3,7 +3,6 @@ import { headers } from "next/headers";
 import { buffer } from "node:stream/consumers";
 import { createSupbaseAdmin } from "@/lib/supabase";
 
-
 const stripe = new Stripe(process.env.STRIPE_SK_KEY, {
   apiVersion: "2023-10-16",
 });
@@ -21,16 +20,11 @@ export async function POST(req, res) {
     return Response.json({ error: `Webhook Error ${err?.message} ` });
   }
 
-  console.log("event111", event);
-
   switch (event.type) {
     case "customer.subscription.deleted":
       const deleteSubscription = event.data.object;
-      if (deleteSubscription.status === 'canceled') {
-        await onCacnelSubscription(
-          false,
-          deleteSubscription.customer
-        );
+      if (deleteSubscription.status === "canceled") {
+        await onCacnelSubscription(false, deleteSubscription.customer);
       }
       break;
     case "customer.subscription.updated":
@@ -42,9 +36,6 @@ export async function POST(req, res) {
       const customerInfo = await stripe.customers.retrieve(
         event.data.object.customer
       );
-
-      console.log("customer",customer);
-      console.log("customerINf1o",customerInfo);
 
       if (subscription.data.length && event.data.object.status === "active") {
         const sub = subscription.data[0];
@@ -82,15 +73,7 @@ const onSuccessSubscription = async (
     .select();
 };
 
-
-
-const onCacnelSubscription = async (
-  status,
-  customer
-) => {
-  // console.log("status", status);
-  // console.log("subscription_id11", subscription_id);
-  console.log("customer111", customer);
+const onCacnelSubscription = async (status, customer) => {
   const supabase = await createSupbaseAdmin();
   const { error } = await supabase
     .from("users")
@@ -100,8 +83,4 @@ const onCacnelSubscription = async (
       subscription_status: status,
     })
     .match({ stripe_customer_id: customer });
-
-  console.log("erro11r", error);
-
-
 };

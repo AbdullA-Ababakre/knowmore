@@ -1,4 +1,4 @@
-.wrapper :global {
+.cover :global {
     tbody tr.ant-table-row[data-row-key="1"] {
         background: initial;
         color: initial;
@@ -7,8 +7,11 @@
     tbody tr.ant-table-row {
         background: #989898;
         color: #989898;
-        background-image: url('');
     }
+}
+
+.cover{
+    
 }
 
 .wrapper {
@@ -30,8 +33,6 @@
         justify-content: center;
         align-items: center;
         z-index: 2;
-
-
     }
 }
 

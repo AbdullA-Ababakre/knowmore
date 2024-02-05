@@ -1,18 +1,25 @@
 "use client";
-import { useRef } from "react";
+import { useRef, useEffect, useState } from "react";
 import { message } from "antd";
 import Papa, { ParseResult } from "papaparse";
 import { handleEmails } from "@/utils/handleEmails";
 import { useFileUploadStore } from '@/lib/store/file';
+import { setItemWithExpiration } from "@/utils/index";
 
 
 export default function FileUpload() {
   const [messageApi, contextHolder] = message.useMessage();
   const fileInputRef = useRef(null);
   const { isUploaded, setIsUploaded } = useFileUploadStore();
+  const [storageIsUploaded, setStorageIsUploaded] = useState(false);
+
+  useEffect(() => {
+    setItemWithExpiration('storageIsUploaded', 'true', 24 * 60 * 60 * 1000);
+  }, [storageIsUploaded]);
 
 
   const handleUpload = async (fileInput: any) => {
+
     Papa.parse(fileInput, {
       header: true,
       skipEmptyLines: true,
@@ -26,11 +33,13 @@ export default function FileUpload() {
           // const data = await response.json();
           if (response.status === 200) {
             setIsUploaded(true);
+            setStorageIsUploaded(false);
             messageApi.open({
               type: 'success',
               content: 'File uploaded successfully',
             });
           } else {
+            localStorage.setItem('storageIsUploaded', 'false');
             messageApi.open({
               type: 'error',
               content: 'Error',
