@@ -27,7 +27,7 @@ export async function handler(req: NextApiRequest, res: NextApiResponse<Data>) {
   }
 }
 
-export async function POST(req: NextApiRequest, res: NextApiResponse<Data>) {
+// export async function POST(req: NextApiRequest, res: NextApiResponse<Data>) {
   // const response = await leap.workflowRuns.workflow({
   //   workflow_id: "wkf_D8rw0tlFr5t0d3",
   //   webhook_url: "https://26f9-204-11-230-50.ngrok-free.app/api/leap",
@@ -41,4 +41,4 @@ export async function POST(req: NextApiRequest, res: NextApiResponse<Data>) {
   // } else {
   //   return Response.json("not completed");
   // }
-}
+// }
