@@ -23,7 +23,14 @@ export default function MainLayout() {
     const handleLeap = async () => {
         const response = await fetch('/api/leap', {
             method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                'email_of_lead': "bill.gates@microsoft.com",
+            })
         });
+        console.log("responseHandLeap", response);
     }
 
     useEffect(() => {

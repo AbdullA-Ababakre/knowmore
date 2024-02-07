@@ -7,52 +7,102 @@ const stripe = new Stripe(process.env.STRIPE_SK_KEY, {
   apiVersion: "2023-10-16",
 });
 
-export async function POST(req, res) {
-  const signature = headers().get("stripe-signature");
-  const signingSecret = process.env.STRIPE_SIGNING_SECRET;
-  const rawBody = await buffer(req.body);
+export async function handler(req, res) {
+  if (req.method === "POST") {
+    const signature = headers().get("stripe-signature");
+    const signingSecret = process.env.STRIPE_SIGNING_SECRET;
+    const rawBody = await buffer(req.body);
 
-  let event;
+    let event;
+    try {
+      event = stripe.webhooks.constructEvent(rawBody, signature, signingSecret);
+    } catch (err) {
+      return Response.json({ error: `Webhook Error ${err?.message} ` });
+    }
 
-  try {
-    event = stripe.webhooks.constructEvent(rawBody, signature, signingSecret);
-  } catch (err) {
-    return Response.json({ error: `Webhook Error ${err?.message} ` });
-  }
+    switch (event.type) {
+      case "customer.subscription.deleted":
+        const deleteSubscription = event.data.object;
+        if (deleteSubscription.status === "canceled") {
+          await onCacnelSubscription(false, deleteSubscription.customer);
+        }
+        break;
+      case "customer.subscription.updated":
+        const { customer } = event.data.object;
+        const subscription = await stripe.subscriptions.list({
+          customer: customer.id,
+        });
 
-  switch (event.type) {
-    case "customer.subscription.deleted":
-      const deleteSubscription = event.data.object;
-      if (deleteSubscription.status === "canceled") {
-        await onCacnelSubscription(false, deleteSubscription.customer);
-      }
-      break;
-    case "customer.subscription.updated":
-      const { customer } = event.data.object;
-      const subscription = await stripe.subscriptions.list({
-        customer: customer.id,
-      });
-
-      const customerInfo = await stripe.customers.retrieve(
-        event.data.object.customer
-      );
-
-      if (subscription.data.length && event.data.object.status === "active") {
-        const sub = subscription.data[0];
-        await onSuccessSubscription(
-          sub.id,
-          customer,
-          sub.status === "active",
-          customerInfo.email
+        const customerInfo = await stripe.customers.retrieve(
+          event.data.object.customer
         );
-      }
-      break;
-    default:
-      console.log(`Unhandled event type ${event.type}`);
-  }
 
-  return Response.json({ success: true });
+        if (subscription.data.length && event.data.object.status === "active") {
+          const sub = subscription.data[0];
+          await onSuccessSubscription(
+            sub.id,
+            customer,
+            sub.status === "active",
+            customerInfo.email
+          );
+        }
+        break;
+      default:
+        console.log(`Unhandled event type ${event.type}`);
+    }
+
+    return Response.json({ success: true });
+  } else {
+    return Response.json({ success: false });
+  }
 }
+
+// export async function POST(req, res) {
+//   const signature = headers().get("stripe-signature");
+//   const signingSecret = process.env.STRIPE_SIGNING_SECRET;
+//   const rawBody = await buffer(req.body);
+
+//   let event;
+
+//   try {
+//     event = stripe.webhooks.constructEvent(rawBody, signature, signingSecret);
+//   } catch (err) {
+//     return Response.json({ error: `Webhook Error ${err?.message} ` });
+//   }
+
+//   switch (event.type) {
+//     case "customer.subscription.deleted":
+//       const deleteSubscription = event.data.object;
+//       if (deleteSubscription.status === "canceled") {
+//         await onCacnelSubscription(false, deleteSubscription.customer);
+//       }
+//       break;
+//     case "customer.subscription.updated":
+//       const { customer } = event.data.object;
+//       const subscription = await stripe.subscriptions.list({
+//         customer: customer.id,
+//       });
+
+//       const customerInfo = await stripe.customers.retrieve(
+//         event.data.object.customer
+//       );
+
+//       if (subscription.data.length && event.data.object.status === "active") {
+//         const sub = subscription.data[0];
+//         await onSuccessSubscription(
+//           sub.id,
+//           customer,
+//           sub.status === "active",
+//           customerInfo.email
+//         );
+//       }
+//       break;
+//     default:
+//       console.log(`Unhandled event type ${event.type}`);
+//   }
+
+//   return Response.json({ success: true });
+// }
 
 const onSuccessSubscription = async (
   subscription_id,
