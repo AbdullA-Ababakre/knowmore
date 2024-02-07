@@ -1,15 +1,11 @@
-import type { NextApiRequest, NextApiResponse } from "next";
 import { Leap } from "@leap-ai/workflows";
 
-type Data = {
-  name: string;
-};
 
 const leap = new Leap({
   apiKey: "le_6ee3a58a_10BQlbAOmDeD0OaYuFpt76jR",
 });
 
-export async function handler(req: NextApiRequest, res: NextApiResponse<Data>) {
+export async function handler(req, res) {
   if (req.method === "POST") {
     try {
       const response = await leap.workflowRuns.workflow({
