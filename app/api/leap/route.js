@@ -5,7 +5,8 @@ const leap = new Leap({
 });
 
 
-export default async function handler(req, res) {
+// eslint-disable-next-line import/no-anonymous-default-export
+export default async function(req, res) {
   if (req.method === "POST") {
     try {
       const response = await leap.workflowRuns.workflow({

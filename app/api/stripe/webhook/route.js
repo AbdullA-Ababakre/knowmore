@@ -7,7 +7,8 @@ const stripe = new Stripe(process.env.STRIPE_SK_KEY, {
   apiVersion: "2023-10-16",
 });
 
-export default async function handler(req, res) {
+// eslint-disable-next-line import/no-anonymous-default-export
+export default async function (req, res) {
   if (req.method === "POST") {
     const signature = headers().get("stripe-signature");
     const signingSecret = process.env.STRIPE_SIGNING_SECRET;
