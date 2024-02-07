@@ -29,6 +29,7 @@ export default function FileUpload() {
 
           if (response.status === 200) {
             setItemWithExpiration('storageIsUploaded', 'true', 1 * 60 * 60 * 1000);
+            
             setIsUploaded(true);
             messageApi.open({
               type: 'success',

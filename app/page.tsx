@@ -1,3 +1,4 @@
+"use client";
 
 import React from "react";
 import Desc from "@/components/Desc";
@@ -6,10 +7,7 @@ import MainLayout from "@/components/mainLayout";
 import Checkout from "@/components/stripe/Checkout";
 
 
-export default async function Home() {
-
-	
-
+export default function Home() {
 	return (
 		<div
 			className="box-border p-[1%_3%_0_3%] w-full h-full"

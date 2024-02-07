@@ -10,7 +10,6 @@ const leap = new Leap({
 });
 
 export async function POST(req: NextApiRequest, res: NextApiResponse<Data>) {
-  console.log("req11", req);
   const response = await leap.workflowRuns.workflow({
     workflow_id: "wkf_eZ1AxrGszPnIsu",
     webhook_url: "https://d171-204-11-230-50.ngrok-free.app/api/leap",
@@ -18,6 +17,5 @@ export async function POST(req: NextApiRequest, res: NextApiResponse<Data>) {
       email_of_lead: "bill.gates@microsoft.com",
     },
   });
-  console.log("response.data", response.data);
   return Response.json({ name: "John Doe" });
 }

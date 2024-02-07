@@ -8,7 +8,7 @@ import { ConfigProvider, Button } from 'antd';
 import { useUser } from "@/lib/store/user";
 import { loadStripe } from "@stripe/stripe-js";
 import { usePathname } from "next/navigation";
-import { setItemWithExpiration, deleteStorage } from '@/utils';
+import { deleteStorage } from '@/utils';
 import { useFileUploadStore } from "@/lib/store/file";
 
 
@@ -69,14 +69,17 @@ export default function Result() {
     const user = useUser((state) => state.user);
     const [isPending, startTransition] = useTransition();
     const [isSub, setIsSub] = useState(false);
-    const [clearStorage, setClearStorage] = useState(false);
     const setIsUploaded = useFileUploadStore((state) => state.setIsUploaded);
+    const isUploaded = useFileUploadStore(state => state.isUploaded);
 
     useEffect(() => {
         const isSub = user?.stripe_customer_id;
-        console.log("isSub", isSub);
-        console.log("Boolean", Boolean(isSub));
-        setIsSub(Boolean(isSub));
+        if (isSub) {
+            setIsSub(true);
+        } else {
+            setIsSub(false);
+        }
+
     }, [user]);
 
 
@@ -156,10 +159,7 @@ export default function Result() {
     ];
 
 
-    const uploadNewFile = () => {
-        deleteStorage('storageIsUploaded');
-        setIsUploaded(false);
-    }
+    
 
 
     return (
@@ -176,7 +176,7 @@ export default function Result() {
                     },
                 }}
             >
-                <Button onClick={uploadNewFile}>Upload New File</Button>
+                
                 <Table className={styles.table} columns={columns} dataSource={data}
                 >
                 </Table>

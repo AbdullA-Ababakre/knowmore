@@ -19,7 +19,6 @@ export default function SessisonProvider() {
 
 	const readSession = async () => {
 		const { data: userSesssion } = await supabase.auth.getSession();
-		console.log("userSession11", userSesssion);
 
 		if (userSesssion.session) {
 			const { data } = await supabase

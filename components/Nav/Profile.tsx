@@ -27,7 +27,6 @@ export default function Profile() {
 		setUser(null);
 		setIsUploaded(false);
 		deleteStorage('storageIsUploaded');
-
 	};
 	const isSub = user?.stripe_customer_id;
 
