@@ -71,7 +71,6 @@ export default function MainLayout() {
             }
             {((storageIsUploaded || isUploaded)) ? <Result /> : <FileUpload />}
             <Button onClick={handleLeap}>Call Leap</Button>
-            {console.log("storageIsUploaded || isUploaded", storageIsUploaded, isUploaded)}
         </div>
     );
 }
