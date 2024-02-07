@@ -1,25 +1,22 @@
 "use client";
-import { useRef, useEffect, useState } from "react";
+import { useRef } from "react";
 import { message } from "antd";
 import Papa, { ParseResult } from "papaparse";
 import { handleEmails } from "@/utils/handleEmails";
-import { useFileUploadStore } from '@/lib/store/file';
 import { setItemWithExpiration } from "@/utils/index";
+import { useUser } from "@/lib/store/user";
+import { useFileUploadStore } from "@/lib/store/file";
 
 
 export default function FileUpload() {
   const [messageApi, contextHolder] = message.useMessage();
   const fileInputRef = useRef(null);
-  const { isUploaded, setIsUploaded } = useFileUploadStore();
-  const [storageIsUploaded, setStorageIsUploaded] = useState(false);
+  const user = useUser((state) => state.user);
+  const setIsUploaded = useFileUploadStore((state) => state.setIsUploaded);
 
-  useEffect(() => {
-    setItemWithExpiration('storageIsUploaded', 'true', 24 * 60 * 60 * 1000);
-  }, [storageIsUploaded]);
 
 
   const handleUpload = async (fileInput: any) => {
-
     Papa.parse(fileInput, {
       header: true,
       skipEmptyLines: true,
@@ -30,16 +27,14 @@ export default function FileUpload() {
             body: handleEmails(results.data),
           });
 
-          // const data = await response.json();
           if (response.status === 200) {
+            setItemWithExpiration('storageIsUploaded', 'true', 1 * 60 * 60 * 1000);
             setIsUploaded(true);
-            setStorageIsUploaded(false);
             messageApi.open({
               type: 'success',
               content: 'File uploaded successfully',
             });
           } else {
-            localStorage.setItem('storageIsUploaded', 'false');
             messageApi.open({
               type: 'error',
               content: 'Error',
@@ -54,11 +49,17 @@ export default function FileUpload() {
   };
 
   const handleClick = () => {
+    if (!user) {
+      messageApi.open({
+        type: 'warning',
+        content: 'login first',
+      });
+      return;
+    }
     if (fileInputRef?.current) {
       // @ts-ignore
       fileInputRef?.current.click();
     }
-
   };
 
   const handleFileChange = (event: any) => {

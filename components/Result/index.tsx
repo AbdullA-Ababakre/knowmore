@@ -1,6 +1,6 @@
 'use client';
 import React, { useEffect, useState, useTransition } from 'react';
-import { Space, Table, Tag } from 'antd';
+import { Table } from 'antd';
 import type { TableProps } from 'antd';
 import { checkout } from "@/lib/actions/stripe";
 import styles from './index.module.scss';
@@ -8,7 +8,8 @@ import { ConfigProvider, Button } from 'antd';
 import { useUser } from "@/lib/store/user";
 import { loadStripe } from "@stripe/stripe-js";
 import { usePathname } from "next/navigation";
-import { createBrowserClient } from "@supabase/ssr";
+import { setItemWithExpiration, deleteStorage } from '@/utils';
+import { useFileUploadStore } from "@/lib/store/file";
 
 
 
@@ -68,28 +69,18 @@ export default function Result() {
     const user = useUser((state) => state.user);
     const [isPending, startTransition] = useTransition();
     const [isSub, setIsSub] = useState(false);
-
+    const [clearStorage, setClearStorage] = useState(false);
+    const setIsUploaded = useFileUploadStore((state) => state.setIsUploaded);
 
     useEffect(() => {
         const isSub = user?.stripe_customer_id;
+        console.log("isSub", isSub);
+        console.log("Boolean", Boolean(isSub));
         setIsSub(Boolean(isSub));
     }, [user]);
 
 
     const pathname = usePathname();
-    const supabase = createBrowserClient(
-        process.env.NEXT_PUBLIC_SUPABASE_URL!,
-        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-    );
-
-    const handleLogin = () => {
-        supabase.auth.signInWithOAuth({
-            provider: "google",
-            options: {
-                redirectTo: `${location.origin}/auth/callback?next=${pathname}`,
-            },
-        });
-    };
 
     const handleCheckOut = () => {
         startTransition(async () => {
@@ -109,11 +100,7 @@ export default function Result() {
     };
 
     const handleSubscribe = () => {
-        if (user) {
-            handleCheckOut();
-        } else {
-            handleLogin();
-        }
+        handleCheckOut();
     }
 
     const columns: TableProps<DataType>['columns'] = [
@@ -169,6 +156,12 @@ export default function Result() {
     ];
 
 
+    const uploadNewFile = () => {
+        deleteStorage('storageIsUploaded');
+        setIsUploaded(false);
+    }
+
+
     return (
         <div className={` ${styles.wrapper} ${!isSub ? styles.cover : ''} `}>
             <ConfigProvider
@@ -183,6 +176,7 @@ export default function Result() {
                     },
                 }}
             >
+                <Button onClick={uploadNewFile}>Upload New File</Button>
                 <Table className={styles.table} columns={columns} dataSource={data}
                 >
                 </Table>

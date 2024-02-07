@@ -10,8 +10,11 @@ import { Button } from "@/components/ui/button";
 import { LockOpen1Icon } from "@radix-ui/react-icons";
 import { createBrowserClient } from "@supabase/ssr";
 import ManageBill from "../stripe/ManageBill";
+import { useFileUploadStore } from "@/lib/store/file";
+import { deleteStorage } from "@/utils/index";
 
 export default function Profile() {
+	const setIsUploaded = useFileUploadStore((state) => state.setIsUploaded);
 	const supabase = createBrowserClient(
 		process.env.NEXT_PUBLIC_SUPABASE_URL!,
 		process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
@@ -22,6 +25,9 @@ export default function Profile() {
 	const handleLogout = async () => {
 		await supabase.auth.signOut();
 		setUser(null);
+		setIsUploaded(false);
+		deleteStorage('storageIsUploaded');
+
 	};
 	const isSub = user?.stripe_customer_id;
 

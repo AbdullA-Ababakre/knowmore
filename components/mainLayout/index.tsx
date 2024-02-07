@@ -1,35 +1,33 @@
 
 "use client";
-import { useFileUploadStore } from '@/lib/store/file';
 import { useRef, useEffect, useState } from "react";
 import FileUpload from '@/components/FileUpload';
 import Result from "@/components/Result";
 import { getItemWithExpiration } from "@/utils/index";
 import { Button } from "antd";
+import { useFileUploadStore } from "@/lib/store/file";
+
 
 
 export default function MainLayout() {
-    const { isUploaded, setIsUploaded } = useFileUploadStore();
     const [storageIsUploaded, setStorageIsUploaded] = useState(false);
+    const isUploaded = useFileUploadStore((state) => state.isUploaded);
 
-    useEffect(() => {
-        if (getItemWithExpiration('storageIsUploaded') === 'true') {
-            setStorageIsUploaded(true);
-        } else {
-            setStorageIsUploaded(false);
-        }
-    }, []);
 
     const handleLeap = async () => {
         const response = await fetch('/api/leap', {
             method: 'POST',
         });
-        console.log("handleLeap", response);
     }
+
+    useEffect(() => {
+        setStorageIsUploaded(getItemWithExpiration('storageIsUploaded'))
+    }, [isUploaded]);
+
 
     return (
         <div className="mt-8">
-            {(isUploaded || storageIsUploaded) ? <Result /> : <FileUpload />}
+            {(storageIsUploaded || isUploaded) ? <Result /> : <FileUpload />}
             <Button onClick={handleLeap}>Call Leap</Button>
         </div>
     );
