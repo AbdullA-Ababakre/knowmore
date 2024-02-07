@@ -4,7 +4,8 @@ const leap = new Leap({
   apiKey: "le_80593dca_E05YaZ9T0h69tXw0iHDkbCHm",
 });
 
-export async function handler(req, res) {
+
+export default async function handler(req, res) {
   if (req.method === "POST") {
     try {
       const response = await leap.workflowRuns.workflow({
