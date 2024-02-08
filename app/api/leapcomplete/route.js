@@ -10,5 +10,9 @@ export async function POST(request) {
   // console.log(incomingData, "train model webhook incomingData");
 
   const { output } = incomingData;
-  console.log("output111", output);
+  if (output) {
+    return Response.json({ message: output });
+  } else {
+    return Response.json({ message: "failed" });
+  }
 }
