@@ -14,9 +14,11 @@ export async function POST(req: NextApiRequest, res: NextApiResponse) {
         email_of_lead: "bill.gates@microsoft.com",
       },
     });
-    return Response.json({ message: "Hello from Next.js!" });
+    // return Response.json({ message: "Hello from Next.js!" });
+    res.status(200).json({ message: "Hello from Next.js!" });
   } catch {
     console.log("11");
-    return Response.json({ message: "nethod not supported" });
+    // return Response.json({ message: "nethod not supported" });
+    res.status(200).json({ message: "Hello from Next.js!" });
   }
 }
