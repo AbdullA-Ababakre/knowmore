@@ -4,10 +4,7 @@ type ResponseData = {
   message: string;
 };
 
-export default function handler(
-  req: NextApiRequest,
-  res: NextApiResponse<ResponseData>
-) {
+export const getData = async (req: NextApiRequest, res: NextApiResponse) => {
   console.log("res-leapComplete", res);
   return Response.json({ message: "succeess" });
-}
+};
