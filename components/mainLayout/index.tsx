@@ -30,7 +30,6 @@ export default function MainLayout() {
                 'email_of_lead': "bill.gates@microsoft.com",
             })
         });
-        console.log("responseHandLeap", response);
     }
 
     useEffect(() => {

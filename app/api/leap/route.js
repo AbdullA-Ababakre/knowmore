@@ -10,21 +10,15 @@ export async function POST(req, res) {
   try {
     const response = await leap.workflowRuns.workflow({
       workflow_id: "wkf_ZUV578fRsUfxz3",
-      webhook_url: "https://knowmore-nhaq0p4cp-abdulla-ababakre.vercel.app/api/leapcomplete",
+      webhook_url:
+        "https://webhook.site/a7baad0f-fe87-44a9-9daa-09b67216ad55/api/leapcomplete",
       input: {
         email_of_lead: "bill.gates@microsoft.com",
       },
     });
+  } catch {}
 
-    if (response.data.output !== null) {
-      res.json(response.data.output); // Assuming output is of type Data
-    } else {
-      res.json({ name: "not completed" });
-    }
-  } catch (error) {
-    console.error("Error:", error);
-    res.status(500).json({ name: "Internal server error" });
-  }
+  return Response.json({ message: "hello" });
 }
 
 // export async function POST(req: NextApiRequest, res: NextApiResponse<Data>) {
