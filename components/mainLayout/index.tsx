@@ -30,9 +30,10 @@ export default function MainLayout() {
                 'email_of_lead': "bill.gates@microsoft.com",
             })
         });
-        
-        // @ts-ignore
-        console.log("response111", JSON.parse(response.body));
+
+        const text = await response.text();
+        console.log("text", text);
+
     }
 
     useEffect(() => {
