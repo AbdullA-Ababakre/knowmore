@@ -5,7 +5,7 @@
 
 import { NextResponse } from "next/server";
 
-export async function POST(request: Request) {
+export async function POST(request) {
   const incomingData = await request.json();
   // console.log(incomingData, "train model webhook incomingData");
 
