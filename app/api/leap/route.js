@@ -10,7 +10,7 @@ export async function POST(req, res) {
   try {
     const response = await leap.workflowRuns.workflow({
       workflow_id: "wkf_ZUV578fRsUfxz3",
-      webhook_url: "https://knowmore-jade.vercel.app//api/leapcomplete",
+      webhook_url: "https://knowmore-nhaq0p4cp-abdulla-ababakre.vercel.app/api/leapcomplete",
       input: {
         email_of_lead: "bill.gates@microsoft.com",
       },
