@@ -7,31 +7,17 @@ const leap = new Leap({
 // eslint-disable-next-line import/no-anonymous-default-export
 // export default async function handler(req, res)
 export async function POST(req, res) {
+  const body = await req.json();
+  console.log("body111", body);
   try {
     const response = await leap.workflowRuns.workflow({
       workflow_id: "wkf_ZUV578fRsUfxz3",
-      webhook_url: "https://knowmore-tan.vercel.app/api/leapcomplete",
+      webhook_url: `https://knowmore-tan.vercel.app/api/leapcomplete?email_of_lead=${body.email}&upload_id=${body.upload_id}`,
       input: {
-        email_of_lead: "bill.gates@microsoft.com",
+        email_of_lead: body.email,
       },
     });
   } catch {}
 
   return Response.json({ message: "hello" });
 }
-
-// export async function POST(req: NextApiRequest, res: NextApiResponse<Data>) {
-// const response = await leap.workflowRuns.workflow({
-//   workflow_id: "wkf_D8rw0tlFr5t0d3",
-//   webhook_url: "https://26f9-204-11-230-50.ngrok-free.app/api/leap",
-//   input: {
-//     email_of_lead: "bill.gates@microsoft.com",
-//   },
-// });
-// console.log("response", response);
-// if (response.data.output !== null) {
-//   return Response.json(response.data);
-// } else {
-//   return Response.json("not completed");
-// }
-// }

@@ -6,6 +6,7 @@ import { handleEmails } from "@/utils/handleEmails";
 import { setItemWithExpiration } from "@/utils/index";
 import { useUser } from "@/lib/store/user";
 import { useFileUploadStore } from "@/lib/store/file";
+import { v4 as uuidv4 } from 'uuid';
 
 
 export default function FileUpload() {
@@ -14,33 +15,45 @@ export default function FileUpload() {
   const user = useUser((state) => state.user);
   const setIsUploaded = useFileUploadStore((state) => state.setIsUploaded);
 
-
+  const fetchUserData = async (email: string) => {
+    const response = await fetch('/api/leap', {
+      method: 'POST',
+      body: JSON.stringify({
+        email: email,
+        upload_id: uuidv4()
+      }),
+    });
+    return response;
+  }
 
   const handleUpload = async (fileInput: any) => {
     Papa.parse(fileInput, {
       header: true,
       skipEmptyLines: true,
       complete: async (results: ParseResult<any>) => {
+        const emails = handleEmails(results.data);
         try {
-          const response = await fetch('/api/upload', {
-            method: 'POST',
-            body: handleEmails(results.data),
-          });
+          // const response = await fetch('/api/leap', {
+          //   method: 'POST',
+          //   body: JSON.stringify(handleEmails(results.data)),
+          // });
 
-          if (response.status === 200) {
-            setItemWithExpiration('storageIsUploaded', 'true', 1 * 60 * 60 * 1000);
-            
-            setIsUploaded(true);
-            messageApi.open({
-              type: 'success',
-              content: 'File uploaded successfully',
-            });
-          } else {
-            messageApi.open({
-              type: 'error',
-              content: 'Error',
-            });
-          }
+          const results = await Promise.all(emails.map((email: string) => fetchUserData(email)));
+
+          // if (response.status === 200) {
+          //   setItemWithExpiration('storageIsUploaded', 'true', 1 * 60 * 60 * 1000);
+
+          //   setIsUploaded(true);
+          //   messageApi.open({
+          //     type: 'success',
+          //     content: 'File uploaded successfully',
+          //   });
+          // } else {
+          //   messageApi.open({
+          //     type: 'error',
+          //     content: 'Error',
+          //   });
+          // }
 
         } catch (error) {
           console.error('Error uploading the file', error);

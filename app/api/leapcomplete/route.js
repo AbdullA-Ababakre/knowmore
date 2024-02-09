@@ -23,13 +23,21 @@ export async function POST(request) {
   // console.log(incomingData, "train model webhook incomingData");
 
   const { output } = incomingData;
-  console.log("output", output);
+
+  const urlObj = new URL(request.url);
+  const email_of_lead = urlObj.searchParams.get("email_of_lead");
+  const upload_id = urlObj.searchParams.get("upload_id");
 
   if (incomingData.status === "completed") {
-    console.log("incomingData-output", output);
-
+    // const obj = {
+    //   output,
+    //   email_of_lead,
+    //   upload_id
+    // }
     const { error: imageError } = await supabase.from("data").insert({
       output: JSON.stringify(output),
+      email_of_lead: JSON.stringify(email_of_lead),
+      upload_id: JSON.stringify(upload_id),
     });
 
     return Response.json({ message: output });
