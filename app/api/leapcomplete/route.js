@@ -29,11 +29,6 @@ export async function POST(request) {
   const upload_id = urlObj.searchParams.get("upload_id");
 
   if (incomingData.status === "completed") {
-    // const obj = {
-    //   output,
-    //   email_of_lead,
-    //   upload_id
-    // }
     const { error: imageError } = await supabase.from("data").insert({
       output: JSON.stringify(output),
       email_of_lead: JSON.stringify(email_of_lead),
