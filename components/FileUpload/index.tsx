@@ -15,12 +15,12 @@ export default function FileUpload() {
   const user = useUser((state) => state.user);
   const setIsUploaded = useFileUploadStore((state) => state.setIsUploaded);
 
-  const fetchUserData = async (email: string) => {
+  const fetchUserData = async (email: string, upload_id: string) => {
     const response = await fetch('/api/leap', {
       method: 'POST',
       body: JSON.stringify({
         email: email,
-        upload_id: uuidv4()
+        upload_id: upload_id
       }),
     });
     return response;
@@ -37,8 +37,9 @@ export default function FileUpload() {
           //   method: 'POST',
           //   body: JSON.stringify(handleEmails(results.data)),
           // });
-
-          const results = await Promise.all(emails.map((email: string) => fetchUserData(email)));
+          const upload_id = uuidv4();
+          const results = await Promise.all(emails.map((email: string) => fetchUserData(email, upload_id)));
+          console.log("results", results);
 
           // if (response.status === 200) {
           //   setItemWithExpiration('storageIsUploaded', 'true', 1 * 60 * 60 * 1000);

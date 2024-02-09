@@ -8,7 +8,6 @@ const leap = new Leap({
 // export default async function handler(req, res)
 export async function POST(req, res) {
   const body = await req.json();
-  console.log("body111", body);
   try {
     const response = await leap.workflowRuns.workflow({
       workflow_id: "wkf_ZUV578fRsUfxz3",
